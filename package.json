@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-videotoblog",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "VideoToBlog trigger for n8n to receive blog exports from Video To Blog.",
   "license": "MIT",
   "homepage": "https://docs.videotoblog.ai/en/help/articles/2997507-n8n",
@@ -11,7 +11,9 @@
     "blog",
     "webhook"
   ],
-  "author": { "name": "andrewpertrovics" },
+  "author": {
+    "name": "andrewpertrovics"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Video-To-Blog/n8n-nodes-videotoblog.git"
@@ -25,11 +27,15 @@
     "release": "n8n-node release",
     "prepublishOnly": "n8n-node prerelease"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "n8n": {
     "n8nNodesApiVersion": 1,
     "strict": true,
-    "credentials": ["dist/credentials/VideoToBlogApi.credentials.js"],
+    "credentials": [
+      "dist/credentials/VideoToBlogApi.credentials.js"
+    ],
     "nodes": [
       "dist/nodes/VideoToBlog/VideoToBlog.node.js"
     ]
@@ -41,5 +47,7 @@
     "release-it": "^19.0.4",
     "typescript": "5.9.2"
   },
-  "peerDependencies": { "n8n-workflow": "*" }
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
 }
