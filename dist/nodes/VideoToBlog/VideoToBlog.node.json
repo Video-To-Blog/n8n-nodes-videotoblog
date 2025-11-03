@@ -1,0 +1,16 @@
+{
+    "node": "n8n-nodes-videotoblog.VideoToBlog",
+    "nodeVersion": "1.0",
+    "codexVersion": "1.0",
+    "categories": [
+        "Productivity"
+    ],
+    "resources": {
+        "credentialDocumentation": [],
+        "primaryDocumentation": [
+            {
+                "url": "https://docs.videotoblog.ai/en/help/articles/2997507-n8n"
+            }
+        ]
+    }
+}
