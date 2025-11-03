@@ -1,6 +1,6 @@
 {
     "name": "n8n-nodes-videotoblog",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "VideoToBlog trigger for n8n to receive blog exports from Video To Blog.",
     "license": "MIT",
     "homepage": "https://docs.videotoblog.ai/en/help/articles/2997507-n8n",
