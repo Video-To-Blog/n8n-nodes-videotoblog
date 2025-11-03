@@ -8,7 +8,7 @@ class VideoToBlogApi {
         this.documentationUrl = 'https://docs.videotoblog.ai/en/help/articles/2997507-n8n';
         this.icon = {
             light: 'file:video-to-blog.svg',
-            dark: 'file:video-to-blog.dark.svg',
+            dark: 'file:video-to-blog.dark.svg'
         };
         this.properties = [
             {
