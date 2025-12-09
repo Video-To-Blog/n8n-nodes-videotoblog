@@ -1,12 +1,4 @@
-import type { 
-    IHookFunctions, 
-    IWebhookFunctions, 
-    INodeType, 
-    INodeTypeDescription, 
-    IWebhookResponseData, 
-    IDataObject 
-} from 'n8n-workflow';
-
+import type { IHookFunctions, IWebhookFunctions, INodeType, INodeTypeDescription, IWebhookResponseData, IDataObject } from 'n8n-workflow';
 export class VideoToBlog implements INodeType {
     description: INodeTypeDescription = {
         displayName: 'VideoToBlog',
@@ -56,70 +48,92 @@ export class VideoToBlog implements INodeType {
         ],
     };
 
-   webhookMethods = {
-    default: {
-        async checkExists(this: IHookFunctions): Promise<boolean> {
-            return false; // always create manually
-        },
+	
 
-        async create(this: IHookFunctions): Promise<boolean> {
-            const destination = this.getNodeParameter('destination') as string;
-            const baseUrl = 'https://91ad81c89a94.ngrok-free.app/api';
+	webhookMethods = {
+		default: {
+			async checkExists(this: IHookFunctions): Promise<boolean> {
+				return false;
+			},
 
-            const credentials = await this.getCredentials('videoToBlogApi');
-            if (!credentials?.apiKey) throw new Error('API key missing in credentials');
+			// Register webhook URL in VTB on activation or test
+			async create(this: IHookFunctions): Promise<boolean> {
+				const destination = this.getNodeParameter('destination') as string;
+				const baseUrl = 'https://91ad81c89a94.ngrok-free.app/api';
 
-            await this.helpers.httpRequest({
-                method: 'POST',
-                url: `${baseUrl}/connectn8n`,
-                headers: { 
-                    'x-api-key': String(credentials.apiKey), 
-                    'Content-Type': 'text/plain' 
-                },
-                body: JSON.stringify({
-                    apiKey: credentials.apiKey,
-                    destination,
-                    webhookBaseUrl: this.getNodeWebhookUrl('default'),
-                }),
-                json: false,
-            });
+				const credentials = await this.getCredentials('videoToBlogApi');
+				
+				if (!credentials?.apiKey) throw new Error('API key missing in credentials');
 
-            return true;
-        },
+				try {
+					const response = await this.helpers.httpRequest({
+						method: 'POST',
+						url: `${baseUrl}/connectn8n`,
+						headers: { 
+							'x-api-key': String(credentials.apiKey), 
+							'Content-Type': 'application/json' 
+						},
+						body: { 
+							apiKey: credentials.apiKey, 
+							destination, 
+							webhookBaseUrl: this.getNodeWebhookUrl('default') },
+						json: true,
+					});
 
-        async delete(this: IHookFunctions): Promise<boolean> {
-            const destination = this.getNodeParameter('destination') as string;
-            const baseUrl = 'https://91ad81c89a94.ngrok-free.app/api';
+					if (!response.success) {
+						throw new Error(`Webhook registration failed for destination "${destination}"`);
+					}
 
-            const credentials = await this.getCredentials('videoToBlogApi');
-            if (!credentials?.apiKey) throw new Error('API key missing in credentials');
+					return true;
+				}
+				catch (error) {
+					throw new Error(`Webhook registration failed: ${(error as Error).message}`);
+				}
+			},
 
-            await this.helpers.httpRequest({
-                method: 'POST',
-                url: `${baseUrl}/connectn8n`,
-                headers: { 
-                    'x-api-key': String(credentials.apiKey), 
-                    'Content-Type': 'text/plain' 
-                },
-                body: JSON.stringify({
-                    apiKey: credentials.apiKey,
-                    destination,
-                    webhookBaseUrl: this.getNodeWebhookUrl('default'),
-                    action: 'unsubscribe',
-                }),
-                json: false,
-            });
+			// Unregister webhook URL in VTB
+			async delete(this: IHookFunctions): Promise<boolean> {
+				const destination = this.getNodeParameter('destination') as string;
+				const baseUrl = 'https://91ad81c89a94.ngrok-free.app/api';
 
-            return true;
-        },
-    },
-};
+				const credentials = await this.getCredentials('videoToBlogApi');
+
+				if (!credentials?.apiKey) throw new Error('API key missing in credentials');
+
+				try {
+					const response = await this.helpers.httpRequest({
+						method: 'POST',
+						url: `${baseUrl}/connectn8n`,
+						headers: { 
+							'x-api-key': String(credentials.apiKey), 
+							'Content-Type': 'application/json' 
+						},
+						body: { 
+							apiKey: credentials.apiKey, 
+							destination, 
+							webhookBaseUrl: this.getNodeWebhookUrl('default'), 
+							action: 'unsubscribe' },
+						json: true,
+					});
+
+					if (!response.success) {
+						throw new Error(`Webhook deletion failed for destination "${destination}"`);
+					}
+
+					return true;
+				} 
+				catch (error) {
+					throw new Error(`Webhook deletion failed: ${(error as Error).message}`);
+				}
+			},
+		},
+	};
 
 
-    async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-        const continueOnFail = this.getNodeParameter('continueOnFail', 0) as boolean;
+	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+		const continueOnFail = this.getNodeParameter('continueOnFail', 0) as boolean;
 
-        try {
+		try {
             const req = this.getRequestObject();
 
             if (!req.body) {
@@ -145,18 +159,19 @@ export class VideoToBlog implements INodeType {
 				throw new Error(`Invalid payload: missing mandatory fields - ${missingFields.join(', ')}`);
 			}
 
-
-            return {
+           return {
                 workflowData: [[{ json: payload }]],
             };
 
-        } catch (error) {
+        } 
+		catch (error) {
             if (continueOnFail) {
                 return {
                     workflowData: [[{ json: { error: (error as Error).message } }]],
                 };
             }
+
             throw error;
         }
-    }
+	};
 }
