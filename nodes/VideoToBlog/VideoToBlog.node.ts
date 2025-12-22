@@ -1,5 +1,7 @@
 import type { IHookFunctions, IWebhookFunctions, INodeType, INodeTypeDescription, IWebhookResponseData, IDataObject } from 'n8n-workflow';
 export class VideoToBlog implements INodeType {
+	private static continueOnFail: boolean = true;
+	
     description: INodeTypeDescription = {
         displayName: 'VideoToBlog',
         name: 'videoToBlog',
@@ -30,13 +32,6 @@ export class VideoToBlog implements INodeType {
                 default: 'postExported',
                 description: 'Event to listen for'
             },
-            {
-                displayName: 'Continue On Fail',
-                name: 'continueOnFail',
-                type: 'boolean',
-                default: false,
-                description: 'Whether to continue workflow execution if this node fails',
-            },
         ],
         webhooks: [
             {
@@ -48,8 +43,6 @@ export class VideoToBlog implements INodeType {
         ],
     };
 
-	
-
 	webhookMethods = {
 		default: {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
@@ -59,7 +52,7 @@ export class VideoToBlog implements INodeType {
 			// Register webhook URL in VTB on activation or test
 			async create(this: IHookFunctions): Promise<boolean> {
 				const destination = this.getNodeParameter('destination') as string;
-				const baseUrl = 'https://91ad81c89a94.ngrok-free.app/api';
+				const baseUrl = 'https://9b06e543a347.ngrok-free.app/api';
 
 				const credentials = await this.getCredentials('videoToBlogApi');
 				
@@ -94,7 +87,7 @@ export class VideoToBlog implements INodeType {
 			// Unregister webhook URL in VTB
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const destination = this.getNodeParameter('destination') as string;
-				const baseUrl = 'https://91ad81c89a94.ngrok-free.app/api';
+				const baseUrl = 'https://9b06e543a347.ngrok-free.app/api';
 
 				const credentials = await this.getCredentials('videoToBlogApi');
 
@@ -129,9 +122,8 @@ export class VideoToBlog implements INodeType {
 		},
 	};
 
-
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-		const continueOnFail = this.getNodeParameter('continueOnFail', 0) as boolean;
+		const continueOnFail = VideoToBlog.continueOnFail as boolean;
 
 		try {
             const req = this.getRequestObject();
