@@ -1,6 +1,6 @@
 import type { IHookFunctions, IWebhookFunctions, INodeType, INodeTypeDescription, IWebhookResponseData, IDataObject } from 'n8n-workflow';
 export class VideoToBlog implements INodeType {
-	private static continueOnFail: boolean = true;
+	static continueOnFail: boolean = true;
 	
     description: INodeTypeDescription = {
         displayName: 'VideoToBlog',
@@ -52,7 +52,7 @@ export class VideoToBlog implements INodeType {
 			// Register webhook URL in VTB on activation or test
 			async create(this: IHookFunctions): Promise<boolean> {
 				const destination = this.getNodeParameter('destination') as string;
-				const baseUrl = 'https://9b06e543a347.ngrok-free.app/api';
+				const baseUrl = 'https://6492af474b11.ngrok-free.app/api';
 
 				const credentials = await this.getCredentials('videoToBlogApi');
 				
@@ -87,7 +87,7 @@ export class VideoToBlog implements INodeType {
 			// Unregister webhook URL in VTB
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const destination = this.getNodeParameter('destination') as string;
-				const baseUrl = 'https://9b06e543a347.ngrok-free.app/api';
+				const baseUrl = 'https://6492af474b11.ngrok-free.app/api';
 
 				const credentials = await this.getCredentials('videoToBlogApi');
 
@@ -162,7 +162,7 @@ export class VideoToBlog implements INodeType {
                     workflowData: [[{ json: { error: (error as Error).message } }]],
                 };
             }
-
+ 
             throw error;
         }
 	};

@@ -33,13 +33,6 @@ class VideoToBlog {
                     default: 'postExported',
                     description: 'Event to listen for'
                 },
-                {
-                    displayName: 'Continue On Fail',
-                    name: 'continueOnFail',
-                    type: 'boolean',
-                    default: false,
-                    description: 'Whether to continue workflow execution if this node fails',
-                },
             ],
             webhooks: [
                 {
@@ -57,7 +50,7 @@ class VideoToBlog {
                 },
                 async create() {
                     const destination = this.getNodeParameter('destination');
-                    const baseUrl = 'https://91ad81c89a94.ngrok-free.app/api';
+                    const baseUrl = 'https://6492af474b11.ngrok-free.app/api';
                     const credentials = await this.getCredentials('videoToBlogApi');
                     if (!(credentials === null || credentials === void 0 ? void 0 : credentials.apiKey))
                         throw new Error('API key missing in credentials');
@@ -87,7 +80,7 @@ class VideoToBlog {
                 },
                 async delete() {
                     const destination = this.getNodeParameter('destination');
-                    const baseUrl = 'https://91ad81c89a94.ngrok-free.app/api';
+                    const baseUrl = 'https://6492af474b11.ngrok-free.app/api';
                     const credentials = await this.getCredentials('videoToBlogApi');
                     if (!(credentials === null || credentials === void 0 ? void 0 : credentials.apiKey))
                         throw new Error('API key missing in credentials');
@@ -120,7 +113,7 @@ class VideoToBlog {
         };
     }
     async webhook() {
-        const continueOnFail = this.getNodeParameter('continueOnFail', 0);
+        const continueOnFail = VideoToBlog.continueOnFail;
         try {
             const req = this.getRequestObject();
             if (!req.body) {
@@ -157,4 +150,5 @@ class VideoToBlog {
     ;
 }
 exports.VideoToBlog = VideoToBlog;
+VideoToBlog.continueOnFail = true;
 //# sourceMappingURL=VideoToBlog.node.js.map
