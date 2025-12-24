@@ -1,7 +1,6 @@
 import type { IHookFunctions, IWebhookFunctions, INodeType, INodeTypeDescription, IWebhookResponseData, IDataObject } from 'n8n-workflow';
 export class VideoToBlog implements INodeType {
-	static continueOnFail: boolean = true;
-	
+
     description: INodeTypeDescription = {
         displayName: 'VideoToBlog',
         name: 'videoToBlog',
@@ -123,7 +122,6 @@ export class VideoToBlog implements INodeType {
 	};
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-		const continueOnFail = VideoToBlog.continueOnFail as boolean;
 
 		try {
             const req = this.getRequestObject();
@@ -157,12 +155,7 @@ export class VideoToBlog implements INodeType {
 
         } 
 		catch (error) {
-            if (continueOnFail) {
-                return {
-                    workflowData: [[{ json: { error: (error as Error).message } }]],
-                };
-            }
- 
+			
             throw error;
         }
 	};
