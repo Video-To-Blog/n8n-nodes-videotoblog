@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VideoToBlog = void 0;
+const n8n_workflow_1 = require("n8n-workflow");
 class VideoToBlog {
     constructor() {
         this.description = {
@@ -8,7 +9,7 @@ class VideoToBlog {
             name: 'videoToBlog',
             icon: { light: 'file:video-to-blog.svg', dark: 'file:video-to-blog.dark.svg' },
             group: ['trigger'],
-            version: 1,
+            version: [1, 2],
             subtitle: '={{"Post Exported"}}',
             description: 'Emits events from Video To Blog when a post is exported',
             defaults: { name: 'VideoToBlog' },
@@ -50,7 +51,7 @@ class VideoToBlog {
                 },
                 async create() {
                     const destination = this.getNodeParameter('destination');
-                    const baseUrl = 'https://6492af474b11.ngrok-free.app/api';
+                    const baseUrl = 'https://videotoblog.ai/api';
                     const credentials = await this.getCredentials('videoToBlogApi');
                     if (!(credentials === null || credentials === void 0 ? void 0 : credentials.apiKey))
                         throw new Error('API key missing in credentials');
@@ -68,19 +69,21 @@ class VideoToBlog {
                                 webhookBaseUrl: this.getNodeWebhookUrl('default')
                             },
                             json: true,
+                            ignoreHttpStatusErrors: true,
                         });
                         if (!response.success) {
-                            throw new Error(`Webhook registration failed for destination "${destination}"`);
+                            throw new Error(response.message || `Webhook  failed for destination "${destination}"`);
                         }
                         return true;
                     }
                     catch (error) {
-                        throw new Error(`Webhook registration failed: ${error.message}`);
+                        const errorPayload = { message: error.message };
+                        throw new n8n_workflow_1.NodeApiError(this.getNode(), errorPayload);
                     }
                 },
                 async delete() {
                     const destination = this.getNodeParameter('destination');
-                    const baseUrl = 'https://6492af474b11.ngrok-free.app/api';
+                    const baseUrl = 'https://videotoblog.ai/api';
                     const credentials = await this.getCredentials('videoToBlogApi');
                     if (!(credentials === null || credentials === void 0 ? void 0 : credentials.apiKey))
                         throw new Error('API key missing in credentials');
@@ -99,37 +102,44 @@ class VideoToBlog {
                                 action: 'unsubscribe'
                             },
                             json: true,
+                            ignoreHttpStatusErrors: true,
                         });
                         if (!response.success) {
-                            throw new Error(`Webhook deletion failed for destination "${destination}"`);
+                            throw new Error(response.message || `Webhook deletion failed for destination "${destination}"`);
                         }
                         return true;
                     }
                     catch (error) {
-                        throw new Error(`Webhook deletion failed: ${error.message}`);
+                        const errorPayload = { message: error.message };
+                        throw new n8n_workflow_1.NodeApiError(this.getNode(), errorPayload);
                     }
                 },
             },
         };
     }
     async webhook() {
-        const continueOnFail = VideoToBlog.continueOnFail;
         try {
             const req = this.getRequestObject();
             if (!req.body) {
-                throw new Error('Webhook received no body');
+                throw new n8n_workflow_1.NodeOperationError(this.getNode(), 'Webhook received no body');
             }
             const payload = req.body;
             const mandatoryFields = [
-                'html',
-                'markdown',
-                'emailHtml',
-                'title',
-                'metaDescription',
-                'metaTitle',
-                'slug',
-                'tags'
+                'id',
+                'status',
+                'videoUrl',
+                'createdAt',
             ];
+            const status = payload.status;
+            if (status === 'processing') {
+                mandatoryFields.push('percentComplete', 'detailedStatus');
+            }
+            else if (status === 'error') {
+                mandatoryFields.push('errorMessage');
+            }
+            else if (status === 'complete') {
+                mandatoryFields.push('html', 'markdown', 'emailHtml', 'title', 'metaDescription', 'metaTitle', 'slug', 'tags');
+            }
             const missingFields = mandatoryFields.filter(field => payload[field] === undefined || payload[field] === null);
             if (missingFields.length) {
                 throw new Error(`Invalid payload: missing mandatory fields - ${missingFields.join(', ')}`);
@@ -139,16 +149,10 @@ class VideoToBlog {
             };
         }
         catch (error) {
-            if (continueOnFail) {
-                return {
-                    workflowData: [[{ json: { error: error.message } }]],
-                };
-            }
-            throw error;
+            throw new n8n_workflow_1.NodeOperationError(this.getNode(), error);
         }
     }
     ;
 }
 exports.VideoToBlog = VideoToBlog;
-VideoToBlog.continueOnFail = true;
 //# sourceMappingURL=VideoToBlog.node.js.map

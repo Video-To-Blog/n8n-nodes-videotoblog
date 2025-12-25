@@ -31,12 +31,13 @@ export class VideoToBlogApi implements ICredentialType {
 
     test: ICredentialTestRequest = {
         request: {
-            baseURL: 'https://www.videotoblog.ai',
+            baseURL: 'https://videotoblog.ai',
             url: '/api/connectn8n',
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({ action: 'verify' }),
         },
+
     };
 }
 

@@ -1,6 +1,5 @@
 import type { IHookFunctions, IWebhookFunctions, INodeType, INodeTypeDescription, IWebhookResponseData } from 'n8n-workflow';
 export declare class VideoToBlog implements INodeType {
-    static continueOnFail: boolean;
     description: INodeTypeDescription;
     webhookMethods: {
         default: {

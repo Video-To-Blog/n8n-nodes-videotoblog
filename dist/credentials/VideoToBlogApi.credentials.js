@@ -30,7 +30,7 @@ class VideoToBlogApi {
         };
         this.test = {
             request: {
-                baseURL: 'https://www.videotoblog.ai',
+                baseURL: 'https://videotoblog.ai',
                 url: '/api/connectn8n',
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
