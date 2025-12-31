@@ -31,7 +31,7 @@ export class VideoToBlogApi implements ICredentialType {
 
     test: ICredentialTestRequest = {
         request: {
-            baseURL: 'https://videotoblog.ai',
+            baseURL: 'https://88a40bb4cc35.ngrok-free.app',
             url: '/api/connectn8n',
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },

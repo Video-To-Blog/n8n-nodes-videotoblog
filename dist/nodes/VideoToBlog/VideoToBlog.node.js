@@ -51,7 +51,7 @@ class VideoToBlog {
                 },
                 async create() {
                     const destination = this.getNodeParameter('destination');
-                    const baseUrl = 'https://videotoblog.ai/api';
+                    const baseUrl = 'https://88a40bb4cc35.ngrok-free.app/api';
                     const credentials = await this.getCredentials('videoToBlogApi');
                     if (!(credentials === null || credentials === void 0 ? void 0 : credentials.apiKey))
                         throw new Error('API key missing in credentials');
@@ -83,7 +83,7 @@ class VideoToBlog {
                 },
                 async delete() {
                     const destination = this.getNodeParameter('destination');
-                    const baseUrl = 'https://videotoblog.ai/api';
+                    const baseUrl = 'https://88a40bb4cc35.ngrok-free.app/api';
                     const credentials = await this.getCredentials('videoToBlogApi');
                     if (!(credentials === null || credentials === void 0 ? void 0 : credentials.apiKey))
                         throw new Error('API key missing in credentials');
@@ -120,29 +120,32 @@ class VideoToBlog {
     async webhook() {
         try {
             const req = this.getRequestObject();
+            const nodeVersion = this.getNode().typeVersion;
             if (!req.body) {
                 throw new n8n_workflow_1.NodeOperationError(this.getNode(), 'Webhook received no body');
             }
             const payload = req.body;
-            const mandatoryFields = [
-                'id',
-                'status',
-                'videoUrl',
-                'createdAt',
-            ];
-            const status = payload.status;
-            if (status === 'processing') {
-                mandatoryFields.push('percentComplete', 'detailedStatus');
-            }
-            else if (status === 'error') {
-                mandatoryFields.push('errorMessage');
-            }
-            else if (status === 'complete') {
-                mandatoryFields.push('html', 'markdown', 'emailHtml', 'title', 'metaDescription', 'metaTitle', 'slug', 'tags');
-            }
-            const missingFields = mandatoryFields.filter(field => payload[field] === undefined || payload[field] === null);
-            if (missingFields.length) {
-                throw new Error(`Invalid payload: missing mandatory fields - ${missingFields.join(', ')}`);
+            if (nodeVersion >= 2) {
+                const mandatoryFields = [
+                    'id',
+                    'status',
+                    'videoUrl',
+                    'createdAt',
+                ];
+                const status = payload.status;
+                if (status === 'processing') {
+                    mandatoryFields.push('percentComplete', 'detailedStatus');
+                }
+                else if (status === 'error') {
+                    mandatoryFields.push('errorMessage');
+                }
+                else if (status === 'complete') {
+                    mandatoryFields.push('html', 'markdown', 'emailHtml', 'title', 'metaDescription', 'metaTitle', 'slug', 'tags');
+                }
+                const missingFields = mandatoryFields.filter(field => payload[field] === undefined || payload[field] === null);
+                if (missingFields.length) {
+                    throw new Error(`Invalid payload: missing mandatory fields - ${missingFields.join(', ')}`);
+                }
             }
             return {
                 workflowData: [[{ json: payload }]],

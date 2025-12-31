@@ -51,7 +51,7 @@ export class VideoToBlog implements INodeType {
 			// Register webhook URL in VTB on activation or test
 			async create(this: IHookFunctions): Promise<boolean> {
 				const destination = this.getNodeParameter('destination') as string;
-				const baseUrl = 'https://videotoblog.ai/api';
+				const baseUrl = 'https://88a40bb4cc35.ngrok-free.app/api';
 
 				const credentials = await this.getCredentials('videoToBlogApi');
 
@@ -89,7 +89,7 @@ export class VideoToBlog implements INodeType {
 			// Unregister webhook URL in VTB
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const destination = this.getNodeParameter('destination') as string;
-				const baseUrl = 'https://videotoblog.ai/api';
+				const baseUrl = 'https://88a40bb4cc35.ngrok-free.app/api';
 
 				const credentials = await this.getCredentials('videoToBlogApi');
 
@@ -130,49 +130,53 @@ export class VideoToBlog implements INodeType {
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		try {
 			const req = this.getRequestObject();
+			const nodeVersion = this.getNode().typeVersion;
 
+		
 			if (!req.body) {
 				throw new NodeOperationError(this.getNode(), 'Webhook received no body');
 			}
 
 			const payload = req.body as IDataObject;
 
-			const mandatoryFields = [
-				'id',
-				'status',
-				'videoUrl',
-				'createdAt',
-			];
+			// Version 2+: Full validation and error handling
+			if (nodeVersion >= 2) {
+				const mandatoryFields = [
+					'id',
+					'status',
+					'videoUrl',
+					'createdAt',
+				];
 
-			const status = payload.status as string;
+				const status = payload.status as string;
 
-			if (status === 'processing') {
-				mandatoryFields.push('percentComplete', 'detailedStatus');
-			} else if (status === 'error') {
-				mandatoryFields.push('errorMessage');
-			} else if (status === 'complete') {
-				mandatoryFields.push(
-					'html',
-					'markdown',
-					'emailHtml',
-					'title',
-					'metaDescription',
-					'metaTitle',
-					'slug',
-					'tags',
-				);
-			}
+				if (status === 'processing') {
+					mandatoryFields.push('percentComplete', 'detailedStatus');
+				} else if (status === 'error') {
+					mandatoryFields.push('errorMessage');
+				} else if (status === 'complete') {
+					mandatoryFields.push(
+						'html',
+						'markdown',
+						'emailHtml',
+						'title',
+						'metaDescription',
+						'metaTitle',
+						'slug',
+						'tags',
+					);
+				}
 
-			const missingFields = mandatoryFields.filter(field => payload[field] === undefined || payload[field] === null);
+				const missingFields = mandatoryFields.filter(field => payload[field] === undefined || payload[field] === null);
 
-			if (missingFields.length) {
-				throw new Error(`Invalid payload: missing mandatory fields - ${missingFields.join(', ')}`);
+				if (missingFields.length) {
+					throw new Error(`Invalid payload: missing mandatory fields - ${missingFields.join(', ')}`);
+				}
 			}
 
 			return {
 				workflowData: [[{ json: payload }]],
 			};
-
 		}
 		catch (error) {
 			throw new NodeOperationError(this.getNode(), error as Error);
