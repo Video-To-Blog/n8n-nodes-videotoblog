@@ -51,7 +51,7 @@ class VideoToBlog {
                 },
                 async create() {
                     const destination = this.getNodeParameter('destination');
-                    const baseUrl = 'https://88a40bb4cc35.ngrok-free.app/api';
+                    const baseUrl = 'https://www.videotoblog.ai/api';
                     const credentials = await this.getCredentials('videoToBlogApi');
                     if (!(credentials === null || credentials === void 0 ? void 0 : credentials.apiKey))
                         throw new Error('API key missing in credentials');
@@ -83,7 +83,7 @@ class VideoToBlog {
                 },
                 async delete() {
                     const destination = this.getNodeParameter('destination');
-                    const baseUrl = 'https://88a40bb4cc35.ngrok-free.app/api';
+                    const baseUrl = 'https://www.videotoblog.ai/api';
                     const credentials = await this.getCredentials('videoToBlogApi');
                     if (!(credentials === null || credentials === void 0 ? void 0 : credentials.apiKey))
                         throw new Error('API key missing in credentials');

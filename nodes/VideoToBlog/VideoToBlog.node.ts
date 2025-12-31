@@ -51,7 +51,7 @@ export class VideoToBlog implements INodeType {
 			// Register webhook URL in VTB on activation or test
 			async create(this: IHookFunctions): Promise<boolean> {
 				const destination = this.getNodeParameter('destination') as string;
-				const baseUrl = 'https://88a40bb4cc35.ngrok-free.app/api';
+				const baseUrl = 'https://www.videotoblog.ai/api';
 
 				const credentials = await this.getCredentials('videoToBlogApi');
 
@@ -89,7 +89,7 @@ export class VideoToBlog implements INodeType {
 			// Unregister webhook URL in VTB
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const destination = this.getNodeParameter('destination') as string;
-				const baseUrl = 'https://88a40bb4cc35.ngrok-free.app/api';
+				const baseUrl = 'https://www.videotoblog.ai/api';
 
 				const credentials = await this.getCredentials('videoToBlogApi');
 
@@ -139,7 +139,7 @@ export class VideoToBlog implements INodeType {
 
 			const payload = req.body as IDataObject;
 
-			// Version 2+: Full validation and error handling
+			// Version 2+: Payload validation
 			if (nodeVersion >= 2) {
 				const mandatoryFields = [
 					'id',

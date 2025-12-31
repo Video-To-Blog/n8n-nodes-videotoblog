@@ -30,7 +30,7 @@ class VideoToBlogApi {
         };
         this.test = {
             request: {
-                baseURL: 'https://88a40bb4cc35.ngrok-free.app',
+                baseURL: 'https://www.videotoblog.ai',
                 url: '/api/connectn8n',
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
